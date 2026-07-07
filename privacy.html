@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Polityka prywatności — WildAlert</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">
+    <div class="logo">🏔️</div>
+    <a href="index.html">WildAlert</a>
+  </div>
+  <div class="nav">
+    <a href="privacy.html"><strong>Polityka prywatności</strong></a>
+    <a href="terms.html">Regulamin</a>
+  </div>
+
+  <h1>Polityka prywatności aplikacji WildAlert</h1>
+  <p class="updated">Ostatnia aktualizacja: 2026-07-02</p>
+
+  <div class="notice">
+    Zobacz też <a href="terms.html">Regulamin</a> — zawiera informację
+    o braku 100% gwarancji wiarygodności zgłoszeń i zasady moderacji.
+  </div>
+
+  <h2>Kto administruje danymi</h2>
+  <p>Administratorem danych jest <strong>Maciej Gryniewicz</strong>
+  (osoba fizyczna), kontakt: <a href="mailto:wildalertapp@gmail.com">wildalertapp@gmail.com</a>.</p>
+
+  <h2>Jakie dane zbieramy i po co</h2>
+  <table>
+    <tr><th>Dane</th><th>Po co</th><th>Podstawa prawna</th></tr>
+    <tr><td>E-mail, hasło (zaszyfrowane)</td><td>Założenie i obsługa konta</td><td>Umowa (regulamin)</td></tr>
+    <tr><td>Pseudonim (nazwa widoczna publicznie)</td><td>Wyświetlanie przy zgłoszeniach</td><td>Umowa</td></tr>
+    <tr><td>Lokalizacja GPS (ciągła, także w tle)</td><td>Wyśrodkowanie mapy, przypisanie pozycji do zgłoszenia, powiadomienia o zagrożeniu w Twoim promieniu — dlatego pozycja jest odświeżana na bieżąco również po zwinięciu aplikacji</td><td>Umowa / zgoda (systemowe okno o dostęp do lokalizacji)</td></tr>
+    <tr><td>Zdjęcie dołączone do zgłoszenia (opcjonalne)</td><td>Uwiarygodnienie zgłoszenia</td><td>Zgoda (zdjęcie jest dobrowolne)</td></tr>
+    <tr><td>Treść zgłoszenia (opis, liczba zwierząt, kierunek, zachowanie)</td><td>Wyświetlenie innym użytkownikom na mapie</td><td>Umowa</td></tr>
+    <tr><td>Potwierdzenia cudzych zgłoszeń</td><td>Wiarygodność zgłoszeń, reputacja</td><td>Umowa</td></tr>
+    <tr><td>Reputacja i historia naruszeń (spam / fałszywe zgłoszenia)</td><td>Ochrona przed nadużyciami</td><td>Uzasadniony interes</td></tr>
+    <tr><td>Token powiadomień push (jeśli włączysz powiadomienia)</td><td>Wysyłka powiadomień o zgłoszeniach w Twojej okolicy</td><td>Zgoda</td></tr>
+  </table>
+  <p>Nie zbieramy danych o zdrowiu, danych biometrycznych ani danych dzieci
+  świadomie — aplikacja nie jest kierowana do dzieci poniżej 16 lat.</p>
+
+  <h2>Lokalizacja w tle — jak to działa</h2>
+  <p>Aby powiadomienia o zagrożeniu w pobliżu miały sens, aplikacja aktualizuje
+  Twoją pozycję również, gdy jest zwinięta do tła:</p>
+  <ul>
+    <li>na serwer trafia <strong>tylko ostatnia znana pozycja</strong> (nadpisywana, nie
+      gromadzimy historii trasy), maksymalnie raz na minutę;</li>
+    <li>na Androidzie widzisz stałe powiadomienie „WildAlert czuwa", na iOS
+      systemowy wskaźnik korzystania z lokalizacji — śledzenie nigdy nie jest ukryte;</li>
+    <li>śledzenie możesz wyłączyć w każdej chwili, odbierając aplikacji dostęp do
+      lokalizacji w ustawieniach systemu (aplikacja nadal działa, ale nie
+      ostrzeże Cię o zagrożeniu w pobliżu);</li>
+    <li>pozycja nie jest nikomu pokazywana — służy wyłącznie do dopasowania
+      powiadomień w wybranym przez Ciebie promieniu.</li>
+  </ul>
+
+  <h2>Zdjęcia — jak są chronione</h2>
+  <p>Zdjęcia dołączone do zgłoszeń trafiają do prywatnego magazynu plików
+  (Supabase Storage). Nie są publicznie dostępne pod żadnym adresem URL —
+  widoczne są tylko: (1) dla Ciebie jako autora, (2) dla innych użytkowników
+  dopiero po moderacji, (3) dla administratora w celach moderacyjnych.</p>
+
+  <h2>Reklamy</h2>
+  <p>Aplikacja wyświetla reklamy przez Google AdMob (poza kontami Premium).
+  Nie prosimy o zgodę na śledzenie między aplikacjami (ATT/IDFA) — reklamy są
+  kontekstowe/niespersonalizowane, a nie oparte o profil reklamowy budowany
+  z innych aplikacji. Google, jako dostawca reklam, przetwarza pewne dane
+  (np. przybliżony region, typ urządzenia) na własnych zasadach — szczegóły:
+  <a href="https://policies.google.com/technologies/ads">policies.google.com/technologies/ads</a>.
+  Użytkownikom w UE/EOG/UK pokazujemy dodatkowo natywne okno zgody RODO na
+  reklamy (Google User Messaging Platform) przy pierwszym uruchomieniu.</p>
+
+  <h2>Komu udostępniamy dane</h2>
+  <ul>
+    <li><strong>Supabase</strong> (baza danych, logowanie, magazyn zdjęć) — hostowane w
+      regionie UE (Frankfurt).</li>
+    <li><strong>Google AdMob</strong> — wyświetlanie reklam (patrz wyżej).</li>
+    <li><strong>Firebase Cloud Messaging</strong> — wyłącznie jeśli włączysz powiadomienia push.</li>
+  </ul>
+  <p>Nie sprzedajemy danych użytkowników.</p>
+
+  <h2>Jak długo przechowujemy dane</h2>
+  <ul>
+    <li>Zgłoszenia znikają automatycznie po czasie właściwym dla danego typu
+      (od 20 minut do 30 dni, w zależności od kategorii).</li>
+    <li>Dane konta (profil, historia, zdjęcia) przechowujemy, dopóki masz
+      aktywne konto.</li>
+  </ul>
+
+  <h2>Twoje prawa</h2>
+  <p>Masz prawo do: dostępu do swoich danych, ich sprostowania, usunięcia,
+  ograniczenia przetwarzania, przenoszenia danych oraz sprzeciwu.</p>
+  <ul>
+    <li><strong>Usunięcie konta</strong> możesz zrobić samodzielnie w każdej chwili:
+      Ustawienia → Konto → „Usuń konto". Kasuje to trwale profil, zgłoszenia,
+      potwierdzenia, zdjęcia i historię reputacji.</li>
+    <li>W innych sprawach napisz na <a href="mailto:wildalertapp@gmail.com">wildalertapp@gmail.com</a>.</li>
+    <li>Masz też prawo złożyć skargę do organu nadzorczego — w Polsce jest to
+      Prezes Urzędu Ochrony Danych Osobowych (UODO), <a href="https://uodo.gov.pl">uodo.gov.pl</a>.</li>
+  </ul>
+
+  <h2>Bezpieczeństwo</h2>
+  <p>Hasła są przechowywane w postaci zahashowanej (nigdy jako czysty tekst),
+  połączenie z serwerem jest szyfrowane (HTTPS), a dostęp do danych w bazie
+  jest ograniczony regułami Row Level Security — każdy użytkownik widzi
+  tylko to, do czego ma prawo.</p>
+
+  <h2>Zmiany tej polityki</h2>
+  <p>O istotnych zmianach poinformujemy w aplikacji. Data ostatniej aktualizacji
+  znajduje się na górze dokumentu.</p>
+
+  <footer>
+    WildAlert — <a href="mailto:wildalertapp@gmail.com">wildalertapp@gmail.com</a>
+  </footer>
+</div>
+</body>
+</html>
