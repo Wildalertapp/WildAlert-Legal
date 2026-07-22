@@ -3,27 +3,239 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>WildAlert — dokumenty prawne</title>
-<link rel="stylesheet" href="style.css">
+<title>WildAlert — górski system ostrzegania w czasie rzeczywistym</title>
+<meta name="description" content="WildAlert ostrzega Cię o dzikich zwierzętach i zagrożeniach w górach — w czasie rzeczywistym, nawet gdy telefon masz w kieszeni.">
+<link rel="icon" href="logo_icon.png">
+<style>
+  :root{
+    --bg:#07080f; --bg2:#0c0e18; --card:#12141f; --line:#20222e;
+    --txt:#f4f5f7; --mut:#9aa0ad; --red:#e5352a;
+    --white:#fff; --radius:18px; --max:1080px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg); color:var(--txt); overflow-x:hidden;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.6; -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:var(--max);margin:0 auto;padding:0 22px}
+
+  /* ---------- STICKY HEADER ---------- */
+  header{
+    position:fixed;top:0;left:0;right:0;z-index:50;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:14px 22px; transition:.35s ease;
+    transform:translateY(-100%); opacity:0;
+    background:rgba(7,8,15,.72); backdrop-filter:blur(12px);
+    border-bottom:1px solid transparent;
+  }
+  header.show{transform:translateY(0);opacity:1;border-bottom-color:var(--line)}
+  header .hbrand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.3px}
+  header .hbrand img{width:30px;height:30px;border-radius:8px}
+  header nav{display:flex;gap:26px;font-size:14px;color:var(--mut)}
+  header nav a:hover{color:var(--txt)}
+  @media(max-width:640px){header nav{display:none}}
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative; min-height:100vh; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; text-align:center; padding:120px 22px 80px;
+    background:radial-gradient(1200px 700px at 70% 20%, rgba(229,53,42,.10), transparent 60%),
+               radial-gradient(900px 600px at 20% 90%, rgba(50,60,90,.16), transparent 60%),
+               var(--bg);
+  }
+  .hero-logo{position:relative;width:clamp(150px,26vw,240px);margin-bottom:26px;will-change:transform}
+  .hero-logo img{width:100%;display:block;filter:drop-shadow(0 20px 60px rgba(0,0,0,.6))}
+  /* pulsujące pierścienie sygnału */
+  .pulse{position:absolute;top:14%;right:6%;width:40%;height:40%;pointer-events:none}
+  .pulse span{
+    position:absolute;inset:0;border:2px solid var(--red);border-radius:50%;
+    opacity:0;animation:ring 3s ease-out infinite;
+  }
+  .pulse span:nth-child(2){animation-delay:1s}
+  .pulse span:nth-child(3){animation-delay:2s}
+  @keyframes ring{0%{transform:scale(.6);opacity:.55}80%{opacity:0}100%{transform:scale(2.1);opacity:0}}
+
+  .hero h1{
+    font-size:clamp(38px,7vw,76px);font-weight:900;letter-spacing:-1.5px;line-height:1.02;
+    background:linear-gradient(180deg,#fff,#b9bdc9);-webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .hero .accent{color:var(--red);-webkit-text-fill-color:var(--red)}
+  .hero p.sub{max-width:640px;margin:20px auto 0;font-size:clamp(16px,2.4vw,21px);color:var(--mut)}
+  .cta{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-top:34px}
+  .btn{
+    display:inline-flex;align-items:center;gap:10px;padding:15px 26px;border-radius:14px;
+    font-weight:700;font-size:15px;transition:.25s ease;border:1px solid var(--line);
+  }
+  .btn.primary{background:var(--white);color:#000;border-color:var(--white)}
+  .btn.primary:hover{transform:translateY(-3px);box-shadow:0 14px 34px rgba(255,255,255,.16)}
+  .btn.ghost{color:var(--txt)}
+  .btn.ghost:hover{border-color:var(--red);color:#fff;transform:translateY(-3px)}
+  .btn small{display:block;font-size:11px;font-weight:600;color:var(--mut);line-height:1}
+  .btn.primary small{color:#555}
+  .scrollcue{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);color:var(--mut);font-size:12px;letter-spacing:2px;text-transform:uppercase;animation:bob 2s ease-in-out infinite}
+  @keyframes bob{50%{transform:translate(-50%,8px)}}
+
+  /* ---------- SECTIONS ---------- */
+  section.block{padding:96px 0;position:relative}
+  .eyebrow{color:var(--red);font-weight:800;letter-spacing:2px;text-transform:uppercase;font-size:13px;margin-bottom:12px}
+  h2{font-size:clamp(28px,4.5vw,44px);font-weight:900;letter-spacing:-1px;line-height:1.1}
+  .lead{color:var(--mut);font-size:18px;max-width:620px;margin-top:14px}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin-top:48px}
+  .feat{
+    background:linear-gradient(180deg,var(--card),#0d0f18);border:1px solid var(--line);
+    border-radius:var(--radius);padding:26px;transition:.3s ease;
+  }
+  .feat:hover{transform:translateY(-5px);border-color:#33131a;box-shadow:0 20px 44px rgba(0,0,0,.5)}
+  .feat .ic{font-size:30px;margin-bottom:14px;display:inline-block}
+  .feat h3{font-size:19px;font-weight:800;margin-bottom:8px}
+  .feat p{color:var(--mut);font-size:15px}
+
+  /* kroki */
+  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin-top:52px;counter-reset:s}
+  .step{position:relative;background:var(--bg2);border:1px solid var(--line);border-radius:var(--radius);padding:34px 26px 26px}
+  .step::before{counter-increment:s;content:counter(s);position:absolute;top:-18px;left:22px;width:44px;height:44px;border-radius:12px;background:var(--red);color:#fff;font-weight:900;font-size:20px;display:grid;place-items:center;box-shadow:0 8px 20px rgba(229,53,42,.4)}
+  .step h3{margin:10px 0 8px;font-size:18px;font-weight:800}
+  .step p{color:var(--mut);font-size:15px}
+
+  /* pasek zaufania / emergency */
+  .safety{background:linear-gradient(180deg,#120a0b,#0b0c14);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .safety .wrap{display:flex;gap:22px;align-items:center;flex-wrap:wrap;justify-content:center;text-align:center}
+  .safety p{color:var(--mut);max-width:680px}
+  .safety b{color:var(--txt)}
+
+  /* CTA końcowe */
+  .final{text-align:center}
+  .final .card{
+    background:radial-gradient(600px 300px at 50% 0%,rgba(229,53,42,.14),transparent 60%),var(--card);
+    border:1px solid var(--line);border-radius:26px;padding:60px 26px;margin-top:20px;
+  }
+  .final img{width:88px;margin-bottom:20px;border-radius:20px}
+
+  /* footer */
+  footer.site{border-top:1px solid var(--line);padding:44px 0 60px;color:var(--mut);font-size:14px}
+  footer.site .wrap{display:flex;flex-wrap:wrap;gap:20px;justify-content:space-between;align-items:center}
+  footer.site a{color:var(--mut)} footer.site a:hover{color:var(--txt)}
+  footer.site .flinks{display:flex;gap:24px;flex-wrap:wrap}
+
+  /* ---------- REVEAL ON SCROLL ---------- */
+  .reveal{opacity:0;transform:translateY(34px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
+  .reveal.in{opacity:1;transform:none}
+  .reveal.d1{transition-delay:.08s}.reveal.d2{transition-delay:.16s}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}.pulse span,.scrollcue{animation:none}}
+</style>
 </head>
 <body>
-<div class="wrap">
-  <div class="brand">
-    <div class="logo">🏔️</div>
-    <a href="index.html">WildAlert</a>
+
+<header id="hdr">
+  <a class="hbrand" href="index.html"><img src="logo_icon.png" alt="">WildAlert</a>
+  <nav>
+    <a href="#funkcje">Funkcje</a>
+    <a href="#jak">Jak działa</a>
+    <a href="privacy.html">Prywatność</a>
+    <a href="terms.html">Regulamin</a>
+  </nav>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-logo" id="heroLogo">
+    <div class="pulse"><span></span><span></span><span></span></div>
+    <img src="logo.png" alt="WildAlert">
   </div>
-
-  <h1>Dokumenty prawne</h1>
-  <p class="updated">Oficjalne strony aplikacji WildAlert.</p>
-
-  <ul>
-    <li><a href="privacy.html">Polityka prywatności</a></li>
-    <li><a href="terms.html">Regulamin</a></li>
-  </ul>
-
-  <footer>
-    Kontakt: <a href="mailto:wildalertapp@gmail.com">wildalertapp@gmail.com</a>
-  </footer>
+  <h1>Góry ostrzegają.<br><span class="accent">Ty słuchasz.</span></h1>
+  <p class="sub">WildAlert to górski system ostrzegania w czasie rzeczywistym — o dzikich zwierzętach, osuwiskach i zagrożeniach na szlaku. Nawet gdy telefon masz w kieszeni.</p>
+  <div class="cta">
+    <a class="btn primary" href="#pobierz">Pobierz aplikację <small>Android — wkrótce</small></a>
+    <a class="btn ghost" href="#jak">Zobacz jak działa</a>
+  </div>
+  <div class="scrollcue">przewiń ↓</div>
 </div>
+
+<!-- FUNKCJE -->
+<section class="block" id="funkcje">
+  <div class="wrap">
+    <div class="reveal"><div class="eyebrow">Co potrafi</div>
+    <h2>Twój radar bezpieczeństwa<br>w górach</h2>
+    <p class="lead">Kilka osób na szlaku to kilka par oczu dla wszystkich innych. WildAlert łączy je w jeden system ostrzegania.</p></div>
+    <div class="grid">
+      <div class="feat reveal"><span class="ic">🗺️</span><h3>Mapa na żywo</h3><p>Widzisz, gdzie ostatnio zgłoszono niedźwiedzia, osuwisko czy zamknięty szlak — zanim tam dojdziesz.</p></div>
+      <div class="feat reveal d1"><span class="ic">🔔</span><h3>Ostrzega, gdy podchodzisz</h3><p>Zbliżasz się do zagrożenia? Dostajesz powiadomienie — nawet z telefonem w kieszeni i zgaszonym ekranem.</p></div>
+      <div class="feat reveal d2"><span class="ic">🐻</span><h3>Zwierzęta i żywioły</h3><p>Niedźwiedzie, wilki, żmije, ale też lawiny, wezbrane potoki, mgła i uszkodzone ubezpieczenia.</p></div>
+      <div class="feat reveal"><span class="ic">🎒</span><h3>Działa w tle</h3><p>Śledzi Twoją okolicę podczas marszu, oszczędnie dla baterii, bez wyciągania telefonu.</p></div>
+      <div class="feat reveal d1"><span class="ic">🌍</span><h3>5 języków</h3><p>Polski, angielski, słowacki, czeski i arabski — z pełną obsługą pisma od prawej do lewej.</p></div>
+      <div class="feat reveal d2"><span class="ic">⛰️</span><h3>Stworzone dla gór</h3><p>Uzupełnienie komunikatów TOPR i GOPR — informacja od turystów, dla turystów.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- JAK DZIAŁA -->
+<section class="block" id="jak" style="background:var(--bg2)">
+  <div class="wrap">
+    <div class="reveal"><div class="eyebrow">Jak to działa</div>
+    <h2>Trzy kroki do bezpieczniejszych gór</h2></div>
+    <div class="steps">
+      <div class="step reveal"><h3>Zgłaszasz</h3><p>Widzisz niedźwiedzia albo zerwany most? Jedno dotknięcie — zaznaczasz to na mapie.</p></div>
+      <div class="step reveal d1"><h3>Inni widzą</h3><p>Twoje zgłoszenie natychmiast trafia do osób w pobliżu. Zbliżają się — dostają ostrzeżenie.</p></div>
+      <div class="step reveal d2"><h3>Wszyscy bezpieczniejsi</h3><p>Zgłoszenia same wygasają, więc informacja jest zawsze świeża. Góry stają się przewidywalne.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- SAFETY -->
+<section class="block safety">
+  <div class="wrap reveal">
+    <span style="font-size:34px">🚁</span>
+    <p>WildAlert ma charakter informacyjny i <b>nie zastępuje</b> służb ratunkowych. W nagłym wypadku w górach dzwoń <b>601 100 300</b> (ratownictwo górskie) lub <b>985</b>.</p>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="block final" id="pobierz">
+  <div class="wrap reveal">
+    <div class="card">
+      <img src="logo_icon.png" alt="">
+      <h2>Miej góry pod kontrolą</h2>
+      <p class="lead" style="margin:14px auto 0">Aplikacja jest w przygotowaniu do publikacji. Wkrótce na Androidzie i iOS.</p>
+      <div class="cta">
+        <a class="btn primary" href="#">Google Play <small>wkrótce</small></a>
+        <a class="btn ghost" href="#">App Store <small>wkrótce</small></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site">
+  <div class="wrap">
+    <div>© <span id="yr"></span> WildAlert · Maciej Gryniewicz</div>
+    <div class="flinks">
+      <a href="privacy.html">Polityka prywatności</a>
+      <a href="terms.html">Regulamin</a>
+      <a href="mailto:wildalertapp@gmail.com">Kontakt</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('yr').textContent = new Date().getFullYear();
+
+  const hdr = document.getElementById('hdr');
+  const hl = document.getElementById('heroLogo');
+  const onScroll = () => {
+    hdr.classList.toggle('show', window.scrollY > window.innerHeight * 0.65);
+    if (hl && window.scrollY < window.innerHeight) {
+      hl.style.transform = 'translateY(' + (window.scrollY * 0.18) + 'px) scale(' + (1 - window.scrollY/4000) + ')';
+    }
+  };
+  window.addEventListener('scroll', onScroll, {passive:true});
+
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+  },{threshold:.15, rootMargin:'0px 0px -60px 0px'});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
 </body>
 </html>
