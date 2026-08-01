@@ -5,7 +5,28 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>WildAlert — górski system ostrzegania w czasie rzeczywistym</title>
 <meta name="description" content="WildAlert ostrzega Cię o dzikich zwierzętach i zagrożeniach w górach — w czasie rzeczywistym, nawet gdy telefon masz w kieszeni.">
+<link rel="canonical" href="https://wildalertapp.github.io/WildAlert-Legal/">
+<meta name="theme-color" content="#07080f">
 <link rel="icon" href="logo_icon.png">
+<link rel="apple-touch-icon" href="logo_icon.png">
+
+<!-- Open Graph / podgląd linku na WhatsApp, Messengerze, Facebooku -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="WildAlert">
+<meta property="og:locale" content="pl_PL">
+<meta property="og:url" content="https://wildalertapp.github.io/WildAlert-Legal/">
+<meta property="og:title" content="WildAlert — góry ostrzegają. Ty słuchasz.">
+<meta property="og:description" content="Górski system ostrzegania w czasie rzeczywistym: niedźwiedzie, lawiny, zamknięte szlaki. Powiadomienie dostajesz, zanim tam dojdziesz.">
+<meta property="og:image" content="https://wildalertapp.github.io/WildAlert-Legal/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Logo WildAlert na ciemnym tle z hasłem „Góry ostrzegają. Ty słuchasz.”">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="WildAlert — góry ostrzegają. Ty słuchasz.">
+<meta name="twitter:description" content="Górski system ostrzegania w czasie rzeczywistym: niedźwiedzie, lawiny, zamknięte szlaki.">
+<meta name="twitter:image" content="https://wildalertapp.github.io/WildAlert-Legal/og-image.png">
+<meta name="twitter:image:alt" content="Logo WildAlert na ciemnym tle z hasłem „Góry ostrzegają. Ty słuchasz.”">
+
 <style>
   :root{
     --bg:#07080f; --bg2:#0c0e18; --card:#12141f; --line:#20222e;
@@ -21,6 +42,7 @@
   }
   a{color:inherit;text-decoration:none}
   .wrap{max-width:var(--max);margin:0 auto;padding:0 22px}
+  :focus-visible{outline:2px solid var(--red);outline-offset:3px;border-radius:6px}
 
   /* ---------- STICKY HEADER ---------- */
   header{
@@ -38,18 +60,39 @@
   header nav a:hover{color:var(--txt)}
   @media(max-width:640px){header nav{display:none}}
 
-  /* ---------- HERO ---------- */
+  /* ---------- HERO 3D ---------- */
   .hero{
-    position:relative; min-height:100vh; display:flex; flex-direction:column;
-    align-items:center; justify-content:center; text-align:center; padding:120px 22px 80px;
-    background:radial-gradient(1200px 700px at 70% 20%, rgba(229,53,42,.10), transparent 60%),
-               radial-gradient(900px 600px at 20% 90%, rgba(50,60,90,.16), transparent 60%),
+    /* dolna granica wysokości: w poziomej orientacji telefonu (ok. 480 px)
+       tekst i znaczniki nie zmieściłyby się w jednym ekranie — lepiej dołożyć
+       trochę przewijania niż ścisnąć wszystko na sobie */
+    position:relative; min-height:760px; min-height:max(100svh,760px); overflow:hidden;
+    display:flex; flex-direction:column; align-items:center;
+    text-align:center; padding:clamp(88px,11vh,132px) 22px 96px;
+    background:radial-gradient(1200px 700px at 70% 12%, rgba(229,53,42,.10), transparent 60%),
+               radial-gradient(900px 600px at 18% 88%, rgba(50,60,90,.16), transparent 60%),
                var(--bg);
   }
-  .hero-logo{position:relative;width:clamp(150px,26vw,240px);margin-bottom:26px;will-change:transform}
-  .hero-logo img{width:100%;display:block;filter:drop-shadow(0 20px 60px rgba(0,0,0,.6))}
-  /* pulsujące pierścienie sygnału */
-  .pulse{position:absolute;top:14%;right:6%;width:40%;height:40%;pointer-events:none}
+  .hero-canvas{
+    position:absolute; inset:0; width:100%; height:100%; display:block; z-index:0;
+    opacity:0; transition:opacity 1.2s ease; pointer-events:none;
+  }
+  .hero.is-3d .hero-canvas{opacity:1}
+  /* przyciemnienie góry kadru — nagłówek musi być czytelny nad sceną */
+  .hero-veil{
+    position:absolute; inset:0; z-index:1; pointer-events:none;
+    background:
+      radial-gradient(120% 54% at 50% -8%, rgba(7,8,15,.9) 0%, rgba(7,8,15,.45) 44%, rgba(7,8,15,0) 74%),
+      linear-gradient(180deg, rgba(7,8,15,.45) 0%, rgba(7,8,15,0) 24%, rgba(7,8,15,0) 58%, rgba(7,8,15,.86) 100%);
+  }
+
+  /* --- statyczne hero: widoczne zanim (lub gdy) 3D nie wystartuje --- */
+  .hero-static{
+    position:absolute; z-index:1; left:50%; top:66%; transform:translate(-50%,-50%);
+    width:clamp(150px,20vw,215px); pointer-events:none; transition:opacity .8s ease;
+  }
+  .hero.is-3d .hero-static{opacity:0}
+  .hero-static img{width:100%;display:block;border-radius:22%;filter:drop-shadow(0 20px 60px rgba(0,0,0,.6))}
+  .pulse{position:absolute;inset:-18%;pointer-events:none}
   .pulse span{
     position:absolute;inset:0;border:2px solid var(--red);border-radius:50%;
     opacity:0;animation:ring 3s ease-out infinite;
@@ -58,6 +101,7 @@
   .pulse span:nth-child(3){animation-delay:2s}
   @keyframes ring{0%{transform:scale(.6);opacity:.55}80%{opacity:0}100%{transform:scale(2.1);opacity:0}}
 
+  .hero-content{position:relative;z-index:3;width:100%;max-width:760px}
   .hero h1{
     font-size:clamp(38px,7vw,76px);font-weight:900;letter-spacing:-1.5px;line-height:1.02;
     background:linear-gradient(180deg,#fff,#b9bdc9);-webkit-background-clip:text;background-clip:text;color:transparent;
@@ -71,41 +115,324 @@
   }
   .btn.primary{background:var(--white);color:#000;border-color:var(--white)}
   .btn.primary:hover{transform:translateY(-3px);box-shadow:0 14px 34px rgba(255,255,255,.16)}
-  .btn.ghost{color:var(--txt)}
+  .btn.ghost{color:var(--txt);background:rgba(7,8,15,.55);backdrop-filter:blur(6px)}
   .btn.ghost:hover{border-color:var(--red);color:#fff;transform:translateY(-3px)}
   .btn small{display:block;font-size:11px;font-weight:600;color:var(--mut);line-height:1}
   .btn.primary small{color:#555}
-  .scrollcue{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);color:var(--mut);font-size:12px;letter-spacing:2px;text-transform:uppercase;animation:bob 2s ease-in-out infinite}
+
+  /* Wspólne miejsce na podpowiedź i kartę zgłoszenia. Karta siedzi w kolumnie
+     treści, a nie przy znaczniku — przy znaczniku wchodziłaby na tekst albo na
+     sąsiednie znaczniki, zależnie od szerokości okna. */
+  .hero-slot{position:relative;min-height:70px;margin-top:24px;display:none}
+  .hero.is-3d .hero-slot{display:block}
+  .hero-hint{
+    position:absolute;left:50%;top:2px;transform:translateX(-50%);
+    display:flex;align-items:center;gap:9px;white-space:nowrap;
+    font-size:13px;color:var(--mut);letter-spacing:.2px;
+    transition:opacity .3s ease;
+  }
+  .hero.sig-on .hero-hint{opacity:0}
+  .hero-hint i{
+    width:7px;height:7px;border-radius:50%;background:var(--red);flex:none;
+    box-shadow:0 0 0 0 rgba(229,53,42,.6);animation:hintdot 2.4s ease-out infinite;
+  }
+  @keyframes hintdot{0%{box-shadow:0 0 0 0 rgba(229,53,42,.55)}70%{box-shadow:0 0 0 9px rgba(229,53,42,0)}100%{box-shadow:0 0 0 0 rgba(229,53,42,0)}}
+
+  /* karta „Zgłoszenie wysłane — Niedźwiedź” */
+  .hero-alert{
+    position:absolute;left:50%;top:0;max-width:min(430px,94vw);
+    display:flex;align-items:center;gap:12px;text-align:left;white-space:nowrap;
+    padding:11px 16px 11px 12px;border-radius:15px;
+    background:rgba(14,16,27,.94);border:1px solid rgba(229,53,42,.5);
+    box-shadow:0 20px 44px rgba(0,0,0,.66),0 0 0 1px rgba(229,53,42,.08);
+    backdrop-filter:blur(10px);
+    opacity:0;transform:translateX(-50%) translateY(8px) scale(.97);
+    transition:opacity .3s ease,transform .3s cubic-bezier(.2,.8,.2,1);
+    pointer-events:none;
+  }
+  .hero.sig-on .hero-alert{opacity:1;transform:translateX(-50%)}
+  .hero-alert .ha-ico{
+    flex:none;width:38px;height:38px;border-radius:11px;display:grid;place-items:center;
+    font-size:19px;background:rgba(229,53,42,.14);border:1px solid rgba(229,53,42,.32);
+  }
+  .hero-alert b{display:block;font-size:13.5px;font-weight:800;letter-spacing:-.2px;color:#fff;line-height:1.3}
+  .hero-alert .ha-sub{display:flex;align-items:center;gap:7px;margin-top:3px;font-size:11.5px;font-weight:700;color:#ff9b94}
+  .hero-alert .ha-sub i{width:6px;height:6px;border-radius:50%;background:var(--red);flex:none}
+
+  .scrollcue{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);z-index:3;color:var(--mut);font-size:12px;letter-spacing:2px;text-transform:uppercase;animation:bob 2s ease-in-out infinite}
   @keyframes bob{50%{transform:translate(-50%,8px)}}
 
-  /* ---------- SECTIONS ---------- */
-  section.block{padding:96px 0;position:relative}
-  .eyebrow{color:var(--red);font-weight:800;letter-spacing:2px;text-transform:uppercase;font-size:13px;margin-bottom:12px}
-  h2{font-size:clamp(28px,4.5vw,44px);font-weight:900;letter-spacing:-1px;line-height:1.1}
-  .lead{color:var(--mut);font-size:18px;max-width:620px;margin-top:14px}
-
-  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin-top:48px}
-  .feat{
-    background:linear-gradient(180deg,var(--card),#0d0f18);border:1px solid var(--line);
-    border-radius:var(--radius);padding:26px;transition:.3s ease;
+  /* ---------- ZNACZNIKI NAD SCENĄ 3D ---------- */
+  .hero-markers{position:absolute;inset:0;z-index:2;pointer-events:none}
+  .mk{
+    position:absolute;top:0;left:0;width:0;height:0;overflow:visible;
+    background:none;border:0;padding:0;font:inherit;color:inherit;
+    pointer-events:auto;cursor:pointer;
+    opacity:0;transition:opacity .5s ease;
   }
-  .feat:hover{transform:translateY(-5px);border-color:#33131a;box-shadow:0 20px 44px rgba(0,0,0,.5)}
-  .feat .ic{font-size:30px;margin-bottom:14px;display:inline-block}
-  .feat h3{font-size:19px;font-weight:800;margin-bottom:8px}
-  .feat p{color:var(--mut);font-size:15px}
+  .hero.is-3d .mk{opacity:1}
+  .mk[hidden],.mk.mk-off{display:none}
+  /* punkt zaczepienia na stoku + cienka nóżka do plakietki */
+  .mk-pin{
+    position:absolute;left:-4px;top:-4px;width:8px;height:8px;border-radius:50%;
+    background:var(--red);box-shadow:0 0 12px rgba(229,53,42,.9);
+  }
+  .mk-pin::after{
+    content:"";position:absolute;left:50%;bottom:6px;width:1px;height:20px;
+    transform:translateX(-50%);
+    background:linear-gradient(180deg,rgba(229,53,42,0),rgba(229,53,42,.75));
+  }
+  .mk-chip{
+    position:absolute;left:50%;bottom:26px;transform:translateX(-50%);
+    display:inline-flex;align-items:center;gap:8px;white-space:nowrap;
+    min-height:42px;padding:0 14px;border-radius:12px;
+    background:rgba(12,14,24,.82);border:1px solid var(--line);
+    backdrop-filter:blur(8px);
+    font-size:13px;font-weight:700;color:var(--txt);
+    box-shadow:0 10px 26px rgba(0,0,0,.55);
+    transition:border-color .25s ease,box-shadow .25s ease,transform .25s ease,background .25s ease;
+  }
+  .mk-ico{font-size:17px;line-height:1}
+  .mk:hover .mk-chip,.mk:focus-visible .mk-chip,.mk.is-active .mk-chip{
+    border-color:var(--red);transform:translateX(-50%) translateY(-3px);
+    box-shadow:0 14px 30px rgba(229,53,42,.28);
+  }
+  .mk.is-active .mk-chip{background:rgba(35,12,12,.9)}
 
-  /* kroki */
-  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin-top:52px;counter-reset:s}
-  .step{position:relative;background:var(--bg2);border:1px solid var(--line);border-radius:var(--radius);padding:34px 26px 26px}
-  .step::before{counter-increment:s;content:counter(s);position:absolute;top:-18px;left:22px;width:44px;height:44px;border-radius:12px;background:var(--red);color:#fff;font-weight:900;font-size:20px;display:grid;place-items:center;box-shadow:0 8px 20px rgba(229,53,42,.4)}
-  .step h3{margin:10px 0 8px;font-size:18px;font-weight:800}
-  .step p{color:var(--mut);font-size:15px}
+  /* mniejsze kropki = inni turyści w pobliżu */
+  .mk.hiker .mk-chip{
+    min-height:0;padding:5px 9px;font-size:11px;font-weight:600;color:var(--mut);
+    background:rgba(12,14,24,.7);bottom:16px;
+  }
+  .mk.hiker .mk-pin{
+    width:6px;height:6px;left:-3px;top:-3px;background:#7d8698;box-shadow:none;
+    transition:background .3s ease,box-shadow .3s ease;
+  }
+  .mk.hiker .mk-pin::after{background:linear-gradient(180deg,rgba(125,134,152,0),rgba(125,134,152,.5));height:12px}
+  .mk.hiker.is-warned .mk-pin{background:var(--red);box-shadow:0 0 14px rgba(229,53,42,.95)}
+  .mk.hiker.is-warned .mk-chip{color:#ffd9d6;border-color:rgba(229,53,42,.55);background:rgba(35,12,12,.85)}
+  /* znaczniki zagrożeń w pobliżu — subtelniejszy błysk */
+  .mk.is-warned:not(.hiker) .mk-chip{border-color:rgba(229,53,42,.5);box-shadow:0 12px 28px rgba(229,53,42,.2)}
+
+  @media(max-width:720px){
+    .hero-slot{min-height:62px;margin-top:18px}
+    .hero-hint{font-size:11.5px;gap:7px}
+    .hero-alert{padding:10px 13px 10px 10px;gap:10px}
+    .hero-alert .ha-ico{width:34px;height:34px;font-size:17px}
+    .hero-alert b{font-size:12.5px}
+    .mk-chip{font-size:12px;min-height:38px;padding:0 11px}
+    .mk .mk-txt{display:none}
+    .mk.hiker .mk-chip{padding:4px 8px;font-size:10px}
+    /* na wąskim ekranie tekst hero musi zająć mniej wysokości,
+       inaczej wchodzi na znaczniki stojące na terenie */
+    .hero{padding:clamp(84px,11vh,120px) 18px 84px}
+    .hero p.sub{font-size:15px;margin-top:14px;max-width:36ch}
+    .cta{margin-top:22px;gap:10px}
+    /* bez dopisków przyciski mieszczą się w jednym rzędzie i hero jest
+       o ~60 px niższe — tyle miejsca zyskują znaczniki na terenie */
+    .btn{padding:13px 16px;font-size:14px}
+    .btn small{display:none}
+  }
+
+  /* ---------- SEKCJE ---------- */
+  section.block{padding:clamp(72px,10vw,116px) 0;position:relative}
+  .eyebrow{
+    color:var(--red);font-weight:800;letter-spacing:2.4px;text-transform:uppercase;font-size:12.5px;
+    margin-bottom:14px;display:flex;align-items:center;gap:10px;
+  }
+  .eyebrow::after{content:"";height:1px;flex:1;max-width:180px;background:linear-gradient(90deg,rgba(229,53,42,.5),transparent)}
+  h2{font-size:clamp(28px,4.5vw,46px);font-weight:900;letter-spacing:-1.2px;line-height:1.06}
+  .lead{color:var(--mut);font-size:17.5px;max-width:600px;margin-top:16px}
+  .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+
+  /* ================= JAK TO DZIAŁA: kroki + telefony ================= */
+  .how-grid{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:clamp(32px,5vw,72px);align-items:center;margin-top:58px}
+  @media(max-width:940px){.how-grid{grid-template-columns:1fr;gap:46px}}
+
+  .how-steps{list-style:none;display:flex;flex-direction:column;gap:4px}
+  .how-step{
+    position:relative;display:flex;gap:18px;width:100%;text-align:left;font:inherit;color:inherit;
+    padding:20px 22px;border-radius:16px;border:1px solid transparent;background:transparent;
+    cursor:pointer;overflow:hidden;transition:background .35s ease,border-color .35s ease;
+  }
+  .how-step:hover{background:rgba(255,255,255,.028)}
+  .how-step.is-on{
+    background:linear-gradient(180deg,rgba(229,53,42,.11),rgba(229,53,42,.015));
+    border-color:rgba(229,53,42,.32);
+  }
+  .hs-no{font-size:12px;font-weight:700;letter-spacing:1.5px;color:#5d6373;padding-top:4px;flex:none;transition:color .35s ease}
+  .how-step.is-on .hs-no{color:var(--red)}
+  .how-step h3{font-size:19px;font-weight:800;letter-spacing:-.3px;margin-bottom:5px}
+  .how-step p{color:var(--mut);font-size:14.5px;line-height:1.55}
+  /* pasek postępu pokazuje, że pokaz sam się przewija */
+  .hs-bar{position:absolute;left:0;bottom:0;height:2px;width:100%;transform:scaleX(0);transform-origin:0 50%;background:var(--red);opacity:.75}
+  .how-step.is-on .hs-bar{animation:hsfill 5s linear forwards}
+  .how.is-paused .how-step.is-on .hs-bar{animation-play-state:paused}
+  @keyframes hsfill{to{transform:scaleX(1)}}
+
+  /* --- obudowa telefonu --- */
+  .how-stage{position:relative;display:flex;align-items:center;justify-content:center}
+  .phone{
+    --pw:clamp(210px,56vw,268px);
+    position:relative;width:var(--pw);flex:none;border-radius:calc(var(--pw)*.135);padding:6px;
+    background:linear-gradient(155deg,#282c37,#0b0d14 60%);
+    box-shadow:0 50px 90px -22px rgba(0,0,0,.9),0 0 0 1px rgba(255,255,255,.055);
+  }
+  .phone-screen{
+    position:relative;aspect-ratio:9/18.6;border-radius:calc(var(--pw)*.105);overflow:hidden;
+    background:#000;isolation:isolate;
+  }
+  .phone-notch{
+    position:absolute;top:8px;left:50%;transform:translateX(-50%);z-index:8;
+    width:26%;height:5.5%;min-height:16px;border-radius:99px;background:#05060a;
+  }
+  .phone-far{
+    --pw:clamp(146px,40vw,196px);
+    margin-left:calc(var(--pw)*-.34);margin-top:9%;
+    opacity:.28;filter:saturate(.5);
+    transition:opacity .6s ease,margin-left .6s cubic-bezier(.2,.8,.2,1),filter .6s ease;
+  }
+  .how[data-step="2"] .phone-far{opacity:1;filter:none;margin-left:calc(var(--pw)*-.16)}
+  .phone-main{z-index:2}
+  .phone-tag{
+    position:absolute;left:50%;transform:translateX(-50%);bottom:-30px;white-space:nowrap;
+    font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:#5d6373;
+  }
+  .phone-far .phone-tag{transition:color .5s ease}
+  .how[data-step="2"] .phone-far .phone-tag{color:var(--mut)}
+
+  /* --- ekrany w telefonie --- */
+  .scr{position:absolute;inset:0;z-index:2;opacity:0;transition:opacity .45s ease;display:flex;flex-direction:column}
+  .scr.on{opacity:1}
+  .ui{font-size:calc(var(--pw)*.042);line-height:1.35;color:#fff}
+  /* pasek stanu */
+  .ui-status{display:flex;justify-content:space-between;padding:calc(var(--pw)*.055) calc(var(--pw)*.06) 0;font-size:.72em;font-weight:700;color:#fff;opacity:.85}
+  .ui-top{padding:calc(var(--pw)*.03) calc(var(--pw)*.06) calc(var(--pw)*.035);font-size:1.28em;font-weight:800;letter-spacing:-.5px}
+  .ui-chips{display:flex;gap:5px;padding:0 calc(var(--pw)*.06) calc(var(--pw)*.04);overflow:hidden}
+  .ui-chip{font-size:.68em;font-weight:600;padding:4px 8px;border-radius:99px;border:1px solid #3a3a3e;color:#98989f;white-space:nowrap}
+  .ui-chip.on{background:#fff;color:#000;border-color:#fff}
+  /* mapa */
+  .ui-map{position:relative;flex:1;background:radial-gradient(120% 90% at 50% 20%,#15161b,#08090c 70%);overflow:hidden}
+  .ui-map svg{position:absolute;inset:0;width:100%;height:100%}
+  .ui-pin{
+    position:absolute;transform:translate(-50%,-100%);display:flex;flex-direction:column;align-items:center;gap:2px;
+  }
+  .ui-pin b{
+    width:calc(var(--pw)*.115);height:calc(var(--pw)*.115);border-radius:50%;display:grid;place-items:center;
+    font-size:.78em;background:#121214;border:1.5px solid currentColor;box-shadow:0 3px 10px rgba(0,0,0,.7);
+  }
+  .ui-pin i{width:3px;height:3px;border-radius:50%;background:currentColor}
+  .ui-pin.p-red{color:#ff453a}.ui-pin.p-org{color:#ff9f0a}.ui-pin.p-blu{color:#64d2ff}
+  .ui-me{position:absolute;left:50%;top:62%;transform:translate(-50%,-50%)}
+  .ui-me span{display:block;width:calc(var(--pw)*.055);height:calc(var(--pw)*.055);border-radius:50%;background:#fff;box-shadow:0 0 0 calc(var(--pw)*.05) rgba(255,255,255,.12)}
+  /* dolna nawigacja */
+  .ui-nav{display:flex;justify-content:space-around;padding:calc(var(--pw)*.038) 0 calc(var(--pw)*.055);background:#0a0a0c;border-top:1px solid #1e1e22}
+  .ui-nav span{font-size:.62em;font-weight:600;color:#98989f;display:flex;flex-direction:column;align-items:center;gap:3px}
+  .ui-nav span em{font-style:normal;font-size:1.5em;line-height:1}
+  .ui-nav span.on{color:#fff}
+  /* arkusz zgłoszenia */
+  .ui-sheet{
+    position:absolute;left:0;right:0;bottom:0;z-index:4;background:#121214;
+    border-radius:calc(var(--pw)*.08) calc(var(--pw)*.08) 0 0;border-top:1px solid #2a2a2e;
+    padding:calc(var(--pw)*.05) calc(var(--pw)*.055) calc(var(--pw)*.06);
+    transform:translateY(100%);transition:transform .5s cubic-bezier(.2,.8,.2,1);
+  }
+  .scr.on .ui-sheet{transform:none}
+  .ui-grab{width:34px;height:4px;border-radius:99px;background:#3a3a3e;margin:0 auto calc(var(--pw)*.045)}
+  .ui-sheet h4{font-size:1.15em;font-weight:800;letter-spacing:-.3px;margin-bottom:calc(var(--pw)*.03)}
+  .ui-gps{font-size:.68em;color:#98989f;margin-bottom:calc(var(--pw)*.045)}
+  .ui-cat{font-size:.6em;font-weight:800;letter-spacing:1.2px;color:#98989f;margin-bottom:calc(var(--pw)*.028)}
+  .ui-opt{
+    display:flex;align-items:center;gap:8px;padding:calc(var(--pw)*.032) calc(var(--pw)*.038);
+    border-radius:10px;border:1px solid #2a2a2e;margin-bottom:5px;font-size:.76em;font-weight:600;color:#d6d6da;
+  }
+  .ui-opt.sel{background:#fff;border-color:#fff;color:#000;font-weight:800}
+  .ui-send{
+    margin-top:calc(var(--pw)*.045);text-align:center;background:#fff;color:#000;font-weight:800;font-size:.82em;
+    padding:calc(var(--pw)*.045) 0;border-radius:12px;
+  }
+  /* ekran blokady + powiadomienie */
+  .ui-lock{flex:1;display:flex;flex-direction:column;align-items:center;background:linear-gradient(170deg,#0e1017,#05060a)}
+  .ui-clock{margin-top:16%;font-size:2.6em;font-weight:300;letter-spacing:-2px;line-height:1}
+  .ui-date{font-size:.72em;color:#98989f;margin-top:2px}
+  .ui-push{
+    margin:calc(var(--pw)*.09) calc(var(--pw)*.05) 0;padding:calc(var(--pw)*.042);width:calc(100% - var(--pw)*.1);
+    background:rgba(30,30,34,.92);border:1px solid #3a3a3e;border-radius:14px;backdrop-filter:blur(6px);
+    display:flex;gap:8px;text-align:left;
+    opacity:0;transform:translateY(-10px) scale(.96);
+  }
+  .how[data-step="2"] .ui-push{animation:pushIn .5s .35s cubic-bezier(.2,.8,.2,1) forwards}
+  @keyframes pushIn{to{opacity:1;transform:none}}
+  .ui-push img{width:calc(var(--pw)*.13);height:calc(var(--pw)*.13);border-radius:7px;flex:none}
+  .ui-push .pt{font-size:.72em;font-weight:800;line-height:1.25}
+  .ui-push .pb{font-size:.66em;color:#98989f;margin-top:2px;line-height:1.3}
+  .ui-push .pw{font-size:.58em;color:#6f6f77;margin-top:4px;letter-spacing:.3px}
+
+  /* ================= CO POTRAFI: bento ================= */
+  .bento{display:grid;grid-template-columns:repeat(12,1fr);gap:14px;margin-top:52px}
+  .bt{
+    grid-column:span 12;position:relative;overflow:hidden;
+    background:linear-gradient(180deg,#111320,#0b0d15);border:1px solid var(--line);
+    border-radius:20px;padding:26px;transition:border-color .35s ease,transform .35s ease;
+  }
+  .bt:hover{border-color:#3a2028;transform:translateY(-3px)}
+  .bt h3{font-size:18px;font-weight:800;letter-spacing:-.3px;margin-bottom:7px}
+  .bt p{color:var(--mut);font-size:14.5px;line-height:1.55}
+  .bt-kick{font-size:11px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:#5d6373;margin-bottom:12px}
+  @media(min-width:820px){
+    .bt-ttl{grid-column:span 5;grid-row:span 2}
+    .bt-bg{grid-column:span 7}
+    .bt-radius{grid-column:span 3}
+    .bt-danger{grid-column:span 4}
+    .bt-lang{grid-column:span 6}
+    .bt-shelters{grid-column:span 6}
+  }
+  /* lista czasów wygasania */
+  .ttl-row{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.055)}
+  .ttl-row:last-child{border-bottom:0}
+  .ttl-row .e{font-size:19px;flex:none;width:24px;text-align:center}
+  .ttl-row .n{flex:1;font-size:14px;font-weight:600;color:#d3d7e0;min-width:0}
+  .ttl-row .t{font-size:12.5px;font-weight:700;color:var(--mut);white-space:nowrap;letter-spacing:.2px}
+  .ttl-row.hi .t{color:#ff8b83}
+  /* powiadomienie w tle */
+  .bg-note{
+    margin-top:18px;display:flex;gap:11px;align-items:center;
+    background:#0a0a0c;border:1px solid #24242a;border-radius:13px;padding:12px 13px;
+  }
+  .bg-note img{width:30px;height:30px;border-radius:8px;flex:none}
+  .bg-note .t{font-size:12.5px;font-weight:700}
+  .bg-note .s{font-size:11.5px;color:#98989f;margin-top:1px}
+  .bg-note .live{margin-left:auto;flex:none;width:7px;height:7px;border-radius:50%;background:#34c759;box-shadow:0 0 0 0 rgba(52,199,89,.55);animation:live 2.6s ease-out infinite}
+  @keyframes live{70%{box-shadow:0 0 0 8px rgba(52,199,89,0)}100%{box-shadow:0 0 0 0 rgba(52,199,89,0)}}
+  /* promienie */
+  .rad{position:relative;height:118px;margin-top:14px}
+  .rad span{position:absolute;left:50%;bottom:0;transform:translateX(-50%);border:1px solid rgba(229,53,42,.32);border-radius:50%;aspect-ratio:1}
+  .rad span:nth-child(1){width:210px;border-style:dashed}
+  .rad span:nth-child(2){width:140px}
+  .rad span:nth-child(3){width:76px;border-color:rgba(229,53,42,.75)}
+  .rad b{position:absolute;left:50%;bottom:-4px;transform:translateX(-50%);width:9px;height:9px;border-radius:50%;background:var(--red);box-shadow:0 0 12px rgba(229,53,42,.9)}
+  .rad em{position:absolute;left:50%;font-style:normal;font-size:11px;font-weight:700;color:var(--mut);transform:translateX(-50%)}
+  /* poziomy zagrożenia */
+  .dgr{display:flex;flex-direction:column;gap:8px;margin-top:16px}
+  .dgr div{display:flex;align-items:center;gap:10px;font-size:12.5px;font-weight:700;letter-spacing:.6px;color:#c2c7d2}
+  .dgr i{height:6px;border-radius:99px;flex:none}
+  /* języki */
+  .lang{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}
+  .lang span{font-size:12.5px;font-weight:700;padding:7px 12px;border-radius:9px;border:1px solid var(--line);color:#c2c7d2;background:#0d0f18}
+  .lang span.rtl{direction:rtl;border-color:rgba(229,53,42,.4);color:#ffb2ac}
+  /* schroniska / pasma */
+  .ranges{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}
+  .ranges span{font-size:12.5px;font-weight:600;color:var(--mut);padding:7px 12px;border-radius:9px;background:#0d0f18;border:1px solid var(--line)}
+  .big-num{font-size:44px;font-weight:900;letter-spacing:-2px;line-height:1;color:#fff}
+  .big-num sub{font-size:14px;font-weight:700;color:var(--mut);letter-spacing:0;vertical-align:baseline;margin-left:8px}
 
   /* pasek zaufania / emergency */
-  .safety{background:linear-gradient(180deg,#120a0b,#0b0c14);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-  .safety .wrap{display:flex;gap:22px;align-items:center;flex-wrap:wrap;justify-content:center;text-align:center}
-  .safety p{color:var(--mut);max-width:680px}
+  .safety{background:linear-gradient(180deg,#150b0c,#0a0b13);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .safety .wrap{display:flex;gap:20px;align-items:center;flex-wrap:wrap;justify-content:center;text-align:center}
+  .safety p{color:var(--mut);max-width:660px;font-size:15px}
   .safety b{color:var(--txt)}
+  .sos{display:inline-flex;gap:8px;align-items:center;font-weight:900;font-size:17px;color:#fff;letter-spacing:-.3px;
+    background:rgba(229,53,42,.14);border:1px solid rgba(229,53,42,.42);border-radius:12px;padding:9px 14px}
 
   /* CTA końcowe */
   .final{text-align:center}
@@ -125,7 +452,14 @@
   .reveal{opacity:0;transform:translateY(34px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
   .reveal.in{opacity:1;transform:none}
   .reveal.d1{transition-delay:.08s}.reveal.d2{transition-delay:.16s}
-  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}.pulse span,.scrollcue{animation:none}}
+
+  @media(prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    .reveal{opacity:1;transform:none;transition:none}
+    .pulse span,.scrollcue,.hero-hint i{animation:none}
+    .hero-canvas{transition:none}
+    .mk,.mk-chip,.hero-alert,.hero-hint{transition:none}
+  }
 </style>
 </head>
 <body>
@@ -141,46 +475,286 @@
 </header>
 
 <!-- HERO -->
-<div class="hero">
-  <div class="hero-logo" id="heroLogo">
+<section class="hero" id="hero">
+  <canvas class="hero-canvas" id="heroCanvas"></canvas>
+
+  <!-- widoczne dopóki (lub jeśli) scena 3D nie wystartuje -->
+  <div class="hero-static" id="heroStatic">
     <div class="pulse"><span></span><span></span><span></span></div>
     <img src="logo.png" alt="WildAlert">
   </div>
-  <h1>Góry ostrzegają.<br><span class="accent">Ty słuchasz.</span></h1>
-  <p class="sub">WildAlert to górski system ostrzegania w czasie rzeczywistym — o dzikich zwierzętach, osuwiskach i zagrożeniach na szlaku. Nawet gdy telefon masz w kieszeni.</p>
-  <div class="cta">
-    <a class="btn primary" href="#pobierz">Pobierz aplikację <small>Android — wkrótce</small></a>
-    <a class="btn ghost" href="#jak">Zobacz jak działa</a>
-  </div>
-  <div class="scrollcue">przewiń ↓</div>
-</div>
 
-<!-- FUNKCJE -->
-<section class="block" id="funkcje">
+  <div class="hero-veil"></div>
+
+  <div class="hero-content">
+    <h1>Góry ostrzegają.<br><span class="accent">Ty słuchasz.</span></h1>
+    <p class="sub">WildAlert to górski system ostrzegania w czasie rzeczywistym — o dzikich zwierzętach, osuwiskach i zagrożeniach na szlaku. Nawet gdy telefon masz w kieszeni.</p>
+    <div class="cta">
+      <a class="btn primary" href="#pobierz">Pobierz aplikację <small>Android — wkrótce</small></a>
+      <a class="btn ghost" href="#jak">Zobacz jak działa</a>
+    </div>
+    <div class="hero-slot">
+      <p class="hero-hint" id="heroHint"><i></i><span id="heroHintTxt">Najedź kursorem na 🐻 — zobacz, jak leci ostrzeżenie</span></p>
+      <div class="hero-alert" id="heroAlert" role="status" aria-live="polite">
+        <span class="ha-ico" aria-hidden="true">🐻</span>
+        <span>
+          <b>Zgłoszenie wysłane — Niedźwiedź</b>
+          <span class="ha-sub"><i></i><span id="haCount">3 osoby w pobliżu ostrzeżone</span></span>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- znaczniki: w DOM po treści, żeby kolejność tabulacji zaczynała się od CTA -->
+  <div class="hero-markers" id="heroMarkers"></div>
+
+  <div class="scrollcue">przewiń ↓</div>
+</section>
+
+<!-- JAK DZIAŁA — pokaz na telefonie -->
+<section class="block how" id="jak" data-step="0" style="background:var(--bg2)">
   <div class="wrap">
-    <div class="reveal"><div class="eyebrow">Co potrafi</div>
-    <h2>Twój radar bezpieczeństwa<br>w górach</h2>
-    <p class="lead">Kilka osób na szlaku to kilka par oczu dla wszystkich innych. WildAlert łączy je w jeden system ostrzegania.</p></div>
-    <div class="grid">
-      <div class="feat reveal"><span class="ic">🗺️</span><h3>Mapa na żywo</h3><p>Widzisz, gdzie ostatnio zgłoszono niedźwiedzia, osuwisko czy zamknięty szlak — zanim tam dojdziesz.</p></div>
-      <div class="feat reveal d1"><span class="ic">🔔</span><h3>Ostrzega, gdy podchodzisz</h3><p>Zbliżasz się do zagrożenia? Dostajesz powiadomienie — nawet z telefonem w kieszeni i zgaszonym ekranem.</p></div>
-      <div class="feat reveal d2"><span class="ic">🐻</span><h3>Zwierzęta i żywioły</h3><p>Niedźwiedzie, wilki, żmije, ale też lawiny, wezbrane potoki, mgła i uszkodzone ubezpieczenia.</p></div>
-      <div class="feat reveal"><span class="ic">🎒</span><h3>Działa w tle</h3><p>Śledzi Twoją okolicę podczas marszu, oszczędnie dla baterii, bez wyciągania telefonu.</p></div>
-      <div class="feat reveal d1"><span class="ic">🌍</span><h3>5 języków</h3><p>Polski, angielski, słowacki, czeski i arabski — z pełną obsługą pisma od prawej do lewej.</p></div>
-      <div class="feat reveal d2"><span class="ic">⛰️</span><h3>Stworzone dla gór</h3><p>Uzupełnienie komunikatów TOPR i GOPR — informacja od turystów, dla turystów.</p></div>
+    <div class="reveal">
+      <div class="eyebrow">Jak to działa</div>
+      <h2>Od spotkania do ostrzeżenia:<br>niecała minuta</h2>
+      <p class="lead">To nie jest wizualizacja „jak by mogło wyglądać” — poniżej są prawdziwe ekrany aplikacji.</p>
+    </div>
+
+    <div class="how-grid reveal">
+      <ol class="how-steps" id="howSteps">
+        <li>
+          <button class="how-step is-on" type="button" data-step="0" aria-pressed="true">
+            <span class="hs-no mono">01</span>
+            <span>
+              <h3>Widzisz</h3>
+              <p>Niedźwiedź kilkadziesiąt metrów od szlaku. Wyjmujesz telefon — mapa zna już Twoją pozycję i pokazuje, co zgłoszono w okolicy.</p>
+            </span>
+            <span class="hs-bar"></span>
+          </button>
+        </li>
+        <li>
+          <button class="how-step" type="button" data-step="1" aria-pressed="false">
+            <span class="hs-no mono">02</span>
+            <span>
+              <h3>Zgłaszasz</h3>
+              <p>Wybierasz z listy gotową pozycję — „Niedźwiedź, spotkanie oko w oko”. Lokalizacja dołącza się sama, zdjęcie jest opcjonalne.</p>
+            </span>
+            <span class="hs-bar"></span>
+          </button>
+        </li>
+        <li>
+          <button class="how-step" type="button" data-step="2" aria-pressed="false">
+            <span class="hs-no mono">03</span>
+            <span>
+              <h3>Inni dostają ostrzeżenie</h3>
+              <p>Każdy w wybranym promieniu dostaje powiadomienie — z telefonem w kieszeni i zgaszonym ekranem. Zgłoszenie samo wygaśnie po dwóch godzinach.</p>
+            </span>
+            <span class="hs-bar"></span>
+          </button>
+        </li>
+      </ol>
+
+      <div class="how-stage">
+        <!-- telefon zgłaszającego -->
+        <div class="phone phone-main">
+          <div class="phone-screen ui">
+            <span class="phone-notch"></span>
+
+            <!-- 01: mapa -->
+            <div class="scr on" data-scr="0">
+              <div class="ui-status"><span>9:41</span><span>▮▮▮ 78%</span></div>
+              <div class="ui-top">WildAlert</div>
+              <div class="ui-chips">
+                <span class="ui-chip on">Wszystkie</span>
+                <span class="ui-chip">🐾 Zwierzęta</span>
+                <span class="ui-chip">🏔️</span>
+              </div>
+              <div class="ui-map">
+                <svg viewBox="0 0 100 180" preserveAspectRatio="none" aria-hidden="true">
+                  <g fill="none" stroke="#2a2f3d" stroke-width=".7">
+                    <path d="M-5 52 C 20 40, 34 62, 52 50 S 86 34, 105 46"/>
+                    <path d="M-5 68 C 22 56, 36 78, 54 66 S 88 50, 105 62"/>
+                    <path d="M-5 96 C 18 86, 40 104, 58 92 S 88 78, 105 88"/>
+                    <path d="M-5 124 C 24 112, 38 132, 56 120 S 86 106, 105 116"/>
+                    <path d="M-5 150 C 20 140, 40 158, 60 146 S 88 134, 105 142"/>
+                  </g>
+                  <path d="M8 170 C 28 130, 44 120, 58 84 S 82 30, 96 6" fill="none" stroke="#4a5162" stroke-width="1.1" stroke-dasharray="3 3"/>
+                </svg>
+                <span class="ui-pin p-red" style="left:38%;top:34%"><b>🐻</b><i></i></span>
+                <span class="ui-pin p-org" style="left:73%;top:52%"><b>🌊</b><i></i></span>
+                <span class="ui-pin p-blu" style="left:22%;top:72%"><b>🦌</b><i></i></span>
+                <span class="ui-me"><span></span></span>
+              </div>
+              <div class="ui-nav">
+                <span class="on"><em>◉</em>Mapa</span><span><em>＋</em>Zgłoś</span><span><em>≡</em>Wiedza</span><span><em>☺</em>Profil</span>
+              </div>
+            </div>
+
+            <!-- 02: arkusz zgłoszenia -->
+            <div class="scr" data-scr="1">
+              <div class="ui-status"><span>9:41</span><span>▮▮▮ 78%</span></div>
+              <div class="ui-top">WildAlert</div>
+              <div class="ui-map" style="filter:brightness(.45)">
+                <svg viewBox="0 0 100 180" preserveAspectRatio="none" aria-hidden="true">
+                  <g fill="none" stroke="#2a2f3d" stroke-width=".7">
+                    <path d="M-5 52 C 20 40, 34 62, 52 50 S 86 34, 105 46"/>
+                    <path d="M-5 96 C 18 86, 40 104, 58 92 S 88 78, 105 88"/>
+                    <path d="M-5 140 C 20 130, 40 148, 60 136 S 88 124, 105 132"/>
+                  </g>
+                </svg>
+              </div>
+              <div class="ui-sheet">
+                <div class="ui-grab"></div>
+                <h4>Co widzisz?</h4>
+                <div class="ui-gps">📍 Lokalizacja GPS zostanie pobrana automatycznie</div>
+                <div class="ui-cat">ZWIERZĘTA</div>
+                <div class="ui-opt">🐗 Dzik na szlaku</div>
+                <div class="ui-opt sel">🐻 Niedźwiedź — spotkanie oko w oko</div>
+                <div class="ui-opt">🐺 Wataha wilków</div>
+                <div class="ui-send">Wyślij zgłoszenie</div>
+              </div>
+            </div>
+
+            <!-- 03: potwierdzenie -->
+            <div class="scr" data-scr="2">
+              <div class="ui-status"><span>9:41</span><span>▮▮▮ 78%</span></div>
+              <div class="ui-top">WildAlert</div>
+              <div class="ui-chips">
+                <span class="ui-chip on">Wszystkie</span>
+                <span class="ui-chip">🐾 Zwierzęta</span>
+                <span class="ui-chip">🏔️</span>
+              </div>
+              <div class="ui-map">
+                <svg viewBox="0 0 100 180" preserveAspectRatio="none" aria-hidden="true">
+                  <g fill="none" stroke="#2a2f3d" stroke-width=".7">
+                    <path d="M-5 52 C 20 40, 34 62, 52 50 S 86 34, 105 46"/>
+                    <path d="M-5 68 C 22 56, 36 78, 54 66 S 88 50, 105 62"/>
+                    <path d="M-5 96 C 18 86, 40 104, 58 92 S 88 78, 105 88"/>
+                    <path d="M-5 124 C 24 112, 38 132, 56 120 S 86 106, 105 116"/>
+                  </g>
+                  <circle cx="38" cy="61" r="10" fill="none" stroke="#ff453a" stroke-width=".8" opacity=".5"/>
+                  <circle cx="38" cy="61" r="18" fill="none" stroke="#ff453a" stroke-width=".7" opacity=".28"/>
+                  <circle cx="38" cy="61" r="27" fill="none" stroke="#ff453a" stroke-width=".6" opacity=".14"/>
+                </svg>
+                <span class="ui-pin p-red" style="left:38%;top:34%"><b>🐻</b><i></i></span>
+                <span class="ui-pin p-org" style="left:73%;top:52%"><b>🌊</b><i></i></span>
+                <span class="ui-me"><span></span></span>
+              </div>
+              <div class="ui-nav">
+                <span class="on"><em>◉</em>Mapa</span><span><em>＋</em>Zgłoś</span><span><em>≡</em>Wiedza</span><span><em>☺</em>Profil</span>
+              </div>
+            </div>
+          </div>
+          <span class="phone-tag">Twój telefon</span>
+        </div>
+
+        <!-- telefon kogoś w pobliżu -->
+        <div class="phone phone-far" aria-hidden="true">
+          <div class="phone-screen ui">
+            <span class="phone-notch"></span>
+            <div class="scr on">
+              <div class="ui-status"><span>9:41</span><span>▮▮ 41%</span></div>
+              <div class="ui-lock">
+                <div class="ui-clock">9:41</div>
+                <div class="ui-date">czwartek, 14 sierpnia</div>
+                <div class="ui-push">
+                  <img src="logo_icon.png" alt="">
+                  <span>
+                    <span class="pt">⚠️ Niedźwiedź — spotkanie oko w oko w pobliżu!</span>
+                    <span class="pb">Otwórz mapę, aby zobaczyć szczegóły i potwierdzić.</span>
+                    <span class="pw">WILDALERT · TERAZ</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <span class="phone-tag">Ktoś 800 m dalej</span>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- JAK DZIAŁA -->
-<section class="block" id="jak" style="background:var(--bg2)">
+<!-- CO POTRAFI — bento -->
+<section class="block" id="funkcje">
   <div class="wrap">
-    <div class="reveal"><div class="eyebrow">Jak to działa</div>
-    <h2>Trzy kroki do bezpieczniejszych gór</h2></div>
-    <div class="steps">
-      <div class="step reveal"><h3>Zgłaszasz</h3><p>Widzisz niedźwiedzia albo zerwany most? Jedno dotknięcie — zaznaczasz to na mapie.</p></div>
-      <div class="step reveal d1"><h3>Inni widzą</h3><p>Twoje zgłoszenie natychmiast trafia do osób w pobliżu. Zbliżają się — dostają ostrzeżenie.</p></div>
-      <div class="step reveal d2"><h3>Wszyscy bezpieczniejsi</h3><p>Zgłoszenia same wygasają, więc informacja jest zawsze świeża. Góry stają się przewidywalne.</p></div>
+    <div class="reveal">
+      <div class="eyebrow">Co potrafi</div>
+      <h2>Szczegóły, które robią<br>różnicę na szlaku</h2>
+      <p class="lead">Kilka osób na szlaku to kilka par oczu dla wszystkich innych. WildAlert spina je w jeden system.</p>
+    </div>
+
+    <div class="bento">
+      <article class="bt bt-ttl reveal">
+        <div class="bt-kick">Świeżość informacji</div>
+        <h3>Zgłoszenia kasują się same</h3>
+        <p>Każdy typ ma własny czas życia — sarna sprzed doby jest bezużyteczna, zamknięty szlak sprzed tygodnia już nie. Nikt nie musi niczego sprzątać.</p>
+        <div style="margin-top:18px">
+          <div class="ttl-row"><span class="e">🦌</span><span class="n">Sarna przy szlaku</span><span class="t mono">20 min</span></div>
+          <div class="ttl-row hi"><span class="e">🐻</span><span class="n">Niedźwiedź — oko w oko</span><span class="t mono">2 godz.</span></div>
+          <div class="ttl-row"><span class="e">🧊</span><span class="n">Szklanka / oblodzenie</span><span class="t mono">24 godz.</span></div>
+          <div class="ttl-row hi"><span class="e">🏔️</span><span class="n">Aktywna lawina</span><span class="t mono">3 dni</span></div>
+          <div class="ttl-row"><span class="e">⛓️</span><span class="n">Uszkodzone ubezpieczenia</span><span class="t mono">14 dni</span></div>
+          <div class="ttl-row"><span class="e">🚧</span><span class="n">Zamknięcie odcinka</span><span class="t mono">30 dni</span></div>
+        </div>
+      </article>
+
+      <article class="bt bt-bg reveal">
+        <div class="bt-kick">Praca w tle</div>
+        <h3>Czuwa, gdy telefon śpi w plecaku</h3>
+        <p>Na serwer trafia wyłącznie ostatnia znana pozycja — nadpisywana, maksymalnie raz na minutę. Historii trasy nie zapisujemy w ogóle, a śledzenie nigdy nie jest ukryte.</p>
+        <div class="bg-note">
+          <img src="logo_icon.png" alt="">
+          <span>
+            <span class="t">WildAlert czuwa</span>
+            <span class="s">Ostrzegam o zagrożeniach w promieniu 600 m</span>
+          </span>
+          <span class="live"></span>
+        </div>
+      </article>
+
+      <article class="bt bt-radius reveal">
+        <div class="bt-kick">Promień</div>
+        <h3>Ty ustawiasz zasięg</h3>
+        <p>400, 600 lub 1000 m w planie darmowym. Premium schodzi do 50 m.</p>
+        <div class="rad">
+          <span></span><span></span><span></span><b></b>
+          <em style="bottom:104px">1000 m</em>
+          <em style="bottom:70px">600 m</em>
+          <em style="bottom:38px">400 m</em>
+        </div>
+      </article>
+
+      <article class="bt bt-danger reveal">
+        <div class="bt-kick">Skala</div>
+        <h3>Cztery poziomy zagrożenia</h3>
+        <p>Ten sam kod kolorów na mapie, w bazie wiedzy i w powiadomieniu.</p>
+        <div class="dgr">
+          <div><i style="background:#64d2ff;width:22%"></i>NISKI</div>
+          <div><i style="background:#ffd60a;width:44%"></i>ŚREDNI</div>
+          <div><i style="background:#ff9f0a;width:68%"></i>WYSOKI</div>
+          <div><i style="background:#ff453a;width:92%"></i>KRYTYCZNY</div>
+        </div>
+      </article>
+
+      <article class="bt bt-lang reveal">
+        <div class="bt-kick">Języki</div>
+        <h3>Pięć języków, w tym pismo od prawej</h3>
+        <p>Słowacy i Czesi chodzą po tych samych graniach. Arabski ma pełną obsługę RTL — nie tylko przetłumaczone napisy.</p>
+        <div class="lang">
+          <span>Polski</span><span>English</span><span>Slovenčina</span><span>Čeština</span>
+          <span class="rtl">العربية ←</span>
+        </div>
+      </article>
+
+      <article class="bt bt-shelters reveal">
+        <div class="bt-kick">Baza terenowa</div>
+        <div class="big-num">96 <sub>schronisk w bazie</sub></div>
+        <p style="margin-top:12px">Uzupełnienie komunikatów TOPR i GOPR — informacja od turystów, dla turystów. Nie zastępuje służb, tylko wypełnia lukę między nimi a szlakiem.</p>
+        <div class="ranges">
+          <span>Tatry</span><span>Bieszczady</span><span>Beskidy</span><span>Pieniny</span><span>Karkonosze</span>
+        </div>
+      </article>
     </div>
   </div>
 </section>
@@ -188,8 +762,10 @@
 <!-- SAFETY -->
 <section class="block safety">
   <div class="wrap reveal">
-    <span style="font-size:34px">🚁</span>
-    <p>WildAlert ma charakter informacyjny i <b>nie zastępuje</b> służb ratunkowych. W nagłym wypadku w górach dzwoń <b>601 100 300</b> (ratownictwo górskie) lub <b>985</b>.</p>
+    <span style="font-size:32px">🚁</span>
+    <p>WildAlert ma charakter informacyjny i <b>nie zastępuje</b> służb ratunkowych ani komunikatów TOPR i GOPR. W nagłym wypadku w górach dzwoń:</p>
+    <a class="sos" href="tel:601100300">601 100 300</a>
+    <a class="sos" href="tel:985">985</a>
   </div>
 </section>
 
@@ -214,6 +790,7 @@
     <div class="flinks">
       <a href="privacy.html">Polityka prywatności</a>
       <a href="terms.html">Regulamin</a>
+      <a href="delete-account.html">Usuwanie konta</a>
       <a href="mailto:wildalertapp@gmail.com">Kontakt</a>
     </div>
   </div>
@@ -223,19 +800,70 @@
   document.getElementById('yr').textContent = new Date().getFullYear();
 
   const hdr = document.getElementById('hdr');
-  const hl = document.getElementById('heroLogo');
   const onScroll = () => {
     hdr.classList.toggle('show', window.scrollY > window.innerHeight * 0.65);
-    if (hl && window.scrollY < window.innerHeight) {
-      hl.style.transform = 'translateY(' + (window.scrollY * 0.18) + 'px) scale(' + (1 - window.scrollY/4000) + ')';
-    }
   };
   window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
 
   const io = new IntersectionObserver((entries)=>{
     entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
   },{threshold:.15, rootMargin:'0px 0px -60px 0px'});
   document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+  /* ---- pokaz „jak to działa”: 3 kroki na ekranie telefonu ----
+     Sam się przewija, ale tylko gdy sekcja jest widoczna — nie ma sensu
+     odtwarzać animacji, której nikt nie ogląda. Kliknięcie kroku przejmuje
+     sterowanie i zatrzymuje autoodtwarzanie. */
+  (function(){
+    const how = document.getElementById('jak');
+    const steps = how && [...how.querySelectorAll('.how-step')];
+    if (!how || !steps || !steps.length) return;
+
+    const screens = [...how.querySelectorAll('.phone-main [data-scr]')];
+    const noMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const STEP_MS = 5000;
+    let cur = 0, timer = null, manual = false, onScreen = false;
+
+    function show(i){
+      cur = i;
+      how.dataset.step = String(i);
+      steps.forEach((b,k)=>{
+        b.classList.toggle('is-on', k===i);
+        b.setAttribute('aria-pressed', k===i ? 'true' : 'false');
+      });
+      screens.forEach((s,k)=>s.classList.toggle('on', k===i));
+    }
+
+    function play(){
+      stop();
+      if (manual || noMotion.matches || !onScreen) return;
+      timer = setTimeout(()=>{ show((cur+1)%steps.length); play(); }, STEP_MS);
+    }
+    function stop(){ if(timer){ clearTimeout(timer); timer=null; } }
+
+    steps.forEach(b=>b.addEventListener('click', ()=>{
+      manual = true;
+      how.classList.add('is-paused');
+      stop();
+      show(Number(b.dataset.step));
+    }));
+
+    new IntersectionObserver((e)=>{
+      onScreen = e[0].isIntersecting;
+      if (onScreen) play(); else stop();
+    },{threshold:.35}).observe(how);
+
+    document.addEventListener('visibilitychange', ()=>{
+      if (document.hidden) stop(); else play();
+    });
+
+    noMotion.addEventListener('change', ()=>{ noMotion.matches ? stop() : play(); });
+  })();
 </script>
+
+<!-- Three.js — wersja przypięta na sztywno; „latest” potrafi się zmienić pod nogami -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" crossorigin="anonymous"></script>
+<script src="hero3d.js"></script>
 </body>
 </html>
