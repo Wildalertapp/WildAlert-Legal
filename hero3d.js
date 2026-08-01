@@ -41,6 +41,11 @@
   var reduceMQ = window.matchMedia('(prefers-reduced-motion: reduce)');
   var noMotion = reduceMQ.matches;
 
+  // etykiety znaczników pochodzą z warstwy językowej; gdyby jej zabrakło,
+  // scena i tak działa — po prostu z polskimi napisami zapasowymi
+  var I18N = window.WA_I18N || null;
+  function T(key, fallback) { return I18N ? I18N.t(key) : fallback; }
+
   var srgb = function (hex) { return new THREE.Color(hex).convertSRGBToLinear(); };
 
   /* ==========================================================
@@ -132,8 +137,6 @@
   renderer.outputEncoding = THREE.sRGBEncoding;
 
   canvas.setAttribute('role', 'img');
-  canvas.setAttribute('aria-label',
-    'Trójwymiarowa mapa górskiego terenu ze znacznikami zgłoszonych zagrożeń.');
 
   var world = new THREE.Group();      // obraca się delikatnie wokół osi Y
   scene.add(world);
@@ -307,10 +310,10 @@
   // (niskie okno, dużo tekstu), tym mniej ich pokazujemy — zamiast pozwolić im
   // wejść na siebie.
   var HAZARDS = [
-    { id: 'ice',       col: -0.72, row: 0.00, tier: 2, icon: '🧊', label: 'Oblodzenie',      aria: 'Zgłoszenie: oblodzenie szlaku.' },
-    { id: 'avalanche', col: 0.62,  row: 0.06, tier: 1, icon: '🏔️', label: 'Lawina',          aria: 'Zgłoszenie: zagrożenie lawinowe.' },
-    { id: 'bear',      col: -0.47, row: 0.30, tier: 0, icon: '🐻', label: 'Niedźwiedź',      aria: 'Zgłoszenie: niedźwiedź. Pokaż, jak rozchodzi się ostrzeżenie.' },
-    { id: 'closed',    col: 0.72,  row: 0.86, tier: 2, icon: '⛔', label: 'Szlak zamknięty', aria: 'Zgłoszenie: szlak zamknięty.' }
+    { id: 'ice',       col: -0.72, row: 0.00, tier: 2, icon: '🧊', key: 'mkIce',       ariaKey: 'ariaIce' },
+    { id: 'avalanche', col: 0.62,  row: 0.06, tier: 1, icon: '🏔️', key: 'mkAvalanche', ariaKey: 'ariaAvalanche' },
+    { id: 'bear',      col: -0.47, row: 0.30, tier: 0, icon: '🐻', key: 'mkBear',      ariaKey: 'ariaBear' },
+    { id: 'closed',    col: 0.72,  row: 0.86, tier: 2, icon: '⛔', key: 'mkClosed',    ariaKey: 'ariaClosed' }
   ];
 
   // turyści skupieni wokół niedźwiedzia — to oni „dostają ostrzeżenie”
@@ -328,7 +331,6 @@
     el.className = 'mk' + (isHiker ? ' hiker' : '');
     if (!isHiker) {
       el.type = 'button';
-      el.setAttribute('aria-label', cfg.aria);
     } else {
       el.setAttribute('aria-hidden', 'true');
     }
@@ -339,11 +341,8 @@
 
     var chip = document.createElement('span');
     chip.className = 'mk-chip';
-    if (isHiker) {
-      chip.textContent = 'turysta';
-    } else {
-      chip.innerHTML = '<span class="mk-ico">' + cfg.icon + '</span>' +
-                       '<span class="mk-txt">' + cfg.label + '</span>';
+    if (!isHiker) {
+      chip.innerHTML = '<span class="mk-ico">' + cfg.icon + '</span><span class="mk-txt"></span>';
     }
     el.appendChild(chip);
 
@@ -352,6 +351,10 @@
     return {
       el: el,
       chip: chip,
+      txt: chip.querySelector('.mk-txt'),
+      hiker: isHiker,
+      key: cfg.key || null,
+      ariaKey: cfg.ariaKey || null,
       id: cfg.id || null,
       col: cfg.col,
       row: cfg.row,
@@ -455,7 +458,38 @@
 
   var cardOk = document.getElementById('haCount');
 
+  // Wszystkie napisy znaczników w jednym miejscu — dzięki temu zmiana języka
+  // to jedno wywołanie, a nie przebudowa sceny.
+  function relabel() {
+    for (var i = 0; i < markers.length; i++) {
+      var m = markers[i];
+      if (m.hiker) {
+        m.chip.textContent = m.el.classList.contains('is-warned')
+          ? T('mkWarned', 'ostrzeżony') : T('mkHiker', 'turysta');
+      } else {
+        if (m.txt) m.txt.textContent = T(m.key, '');
+        m.el.setAttribute('aria-label', T(m.ariaKey, ''));
+      }
+    }
+    canvas.setAttribute('aria-label', T('canvasAria',
+      'Trójwymiarowa mapa górskiego terenu ze znacznikami zgłoszonych zagrożeń.'));
+    if (hintTxt) {
+      hintTxt.textContent = window.matchMedia('(pointer: coarse)').matches
+        ? T('hintTouch', 'Dotknij 🐻 — zobacz, jak leci ostrzeżenie')
+        : T('hintMouse', 'Najedź kursorem na 🐻 — zobacz, jak leci ostrzeżenie');
+    }
+    updateCount();
+  }
+
+  function updateCount() {
+    if (!cardOk) return;
+    var shown = hikers.filter(function (m) { return !m.el.classList.contains('mk-off'); }).length;
+    cardOk.textContent = I18N ? I18N.plural(shown, 'alert') : (shown + ' osoby w pobliżu ostrzeżone');
+  }
+
+  relabel();
   layoutMarkers();
+  if (I18N) I18N.on(function () { relabel(); if (!noMotion) renderFrame(); });
 
   /* ==========================================================
      5. SEKWENCJA OSTRZEŻENIA
@@ -484,13 +518,11 @@
     // turyści zapalają się kaskadą — „ostrzeżenie idzie dalej”
     clearWarnTimers();
     var shown = hikers.filter(function (m) { return !m.el.classList.contains('mk-off'); });
-    cardOk.textContent = shown.length === 1
-      ? '1 osoba w pobliżu ostrzeżona'
-      : shown.length + ' osoby w pobliżu ostrzeżone';
+    updateCount();
     shown.forEach(function (m, i) {
       warnTimers.push(setTimeout(function () {
         m.el.classList.add('is-warned');
-        m.chip.textContent = 'ostrzeżony';
+        m.chip.textContent = T('mkWarned', 'ostrzeżony');
       }, 220 + i * 130));
     });
     otherHazards.forEach(function (m, i) {
@@ -509,7 +541,7 @@
     clearWarnTimers();
     hikers.forEach(function (m) {
       m.el.classList.remove('is-warned');
-      m.chip.textContent = 'turysta';
+      m.chip.textContent = T('mkHiker', 'turysta');
     });
     otherHazards.forEach(function (m) { m.el.classList.remove('is-warned'); });
 
@@ -712,10 +744,6 @@
       start();
     }
   });
-
-  if (hintTxt && window.matchMedia('(pointer: coarse)').matches) {
-    hintTxt.textContent = 'Dotknij 🐻 — zobacz, jak leci ostrzeżenie';
-  }
 
   // Klasa musi być ustawiona PRZED pierwszym rozłożeniem znaczników: dopóki
   // jej nie ma, .hero-slot jest ukryty i nie ma wymiarów, więc pas na znaczniki
